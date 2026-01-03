@@ -1,3 +1,3 @@
-module github.com/mcvoid.org/elo
+module github.com/mcvoid/elo
 
 go 1.24.5
