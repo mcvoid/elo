@@ -1,6 +1,7 @@
 package elo
 
 import (
+	"fmt"
 	"math"
 	"slices"
 	"testing"
@@ -199,7 +200,7 @@ func TestRace(t *testing.T) {
 			[]time.Duration{100 * time.Millisecond, 120 * time.Millisecond, 140 * time.Millisecond},
 			10*time.Millisecond,
 		)
-		if !slices.Equal(expected, actual[:]) {
+		if !slices.Equal(expected, actual) {
 			t.Errorf("expected %v got %v", expected, actual)
 		}
 	})
@@ -214,7 +215,7 @@ func TestRace(t *testing.T) {
 			[]time.Duration{100 * time.Millisecond, 100 * time.Millisecond, 100 * time.Millisecond},
 			10*time.Millisecond,
 		)
-		if !slices.Equal(expected, actual[:]) {
+		if !slices.Equal(expected, actual) {
 			t.Errorf("expected %v got %v", expected, actual)
 		}
 	})
@@ -225,8 +226,86 @@ func TestRace(t *testing.T) {
 			[]time.Duration{100 * time.Millisecond},
 			10*time.Millisecond,
 		)
-		if !slices.Equal(expected, actual[:]) {
+		if !slices.Equal(expected, actual) {
 			t.Errorf("expected %v got %v", expected, actual)
 		}
 	})
+}
+
+func TestPlace(t *testing.T) {
+	t.Run("1st, 2nd, 3rd", func(t *testing.T) {
+		expected, _ := Default.Calculate(
+			[]float64{1700, 1500, 1300},
+			[]float64{20, 20, 20},
+			[]float64{1, 0.5, 0},
+		)
+		actual, _ := Default.Place(
+			[]Player{
+				player{1700, 20},
+				player{1500, 20},
+				player{1300, 20},
+			},
+		)
+		if !slices.Equal(expected, actual) {
+			t.Errorf("expected %v got %v", expected, actual)
+		}
+	})
+	t.Run("3rd, 2nd, 1st", func(t *testing.T) {
+		expected, _ := Default.Calculate(
+			[]float64{1300, 1500, 1700},
+			[]float64{20, 20, 20},
+			[]float64{1, 0.5, 0},
+		)
+		actual, _ := Default.Place(
+			[]Player{
+				player{1300, 20},
+				player{1500, 20},
+				player{1700, 20},
+			},
+		)
+		if !slices.Equal(expected, actual) {
+			t.Errorf("expected %v got %v", expected, actual)
+		}
+	})
+	t.Run("3rd, 1st, 2nd", func(t *testing.T) {
+		expected, _ := Default.Calculate(
+			[]float64{1500, 1300, 1700},
+			[]float64{20, 20, 20},
+			[]float64{1, 0.5, 0},
+		)
+		actual, _ := Default.Place(
+			[]Player{
+				player{1500, 20},
+				player{1300, 20},
+				player{1700, 20},
+			},
+		)
+		if !slices.Equal(expected, actual) {
+			t.Errorf("expected %v got %v", expected, actual)
+		}
+	})
+}
+
+func TestLerp(t *testing.T) {
+	for _, expected := range [][]float64{
+		{},
+		{0.5},
+		{1, 0},
+		{1, 0.5, 0},
+		{1, 2.0 / 3, 1.0 / 3, 0},
+		{1, 0.75, 0.5, 0.25, 0},
+		{1, 0.8, 0.6, 0.4, 0.2, 0},
+		{1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0},
+	} {
+		t.Run(fmt.Sprint(expected), func(t *testing.T) {
+			actual := make([]float64, len(expected))
+			lerp(actual)
+
+			for i := range expected {
+				if math.Abs(expected[i]-actual[i]) > 1e-9 {
+					t.Errorf("expected %v got %v", expected, actual)
+				}
+			}
+		})
+	}
 }
