@@ -136,7 +136,7 @@ func (e Elo) Calculate(ratings, kFactors, normalizedScores []float64) (newRating
 		s[i] = normalizedScores[j]
 	}
 
-	// do the actual Elo calulations
+	// do the actual Elo calculations
 	diffs := make([]float64, l)
 	for a := 0; a < l-1; a++ {
 		b := a + 1
