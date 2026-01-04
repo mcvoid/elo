@@ -9,7 +9,7 @@
 //		// A head-to-head match between two players
 //		newRatings := elo.Default.H2H(
 //			[...]Player{p1, p2}, // the players in the match
-//	 	[...]float64{25, 7}, // their scores
+//	 	    [...]float64{25, 7}, // their scores
 //		)
 //
 // # How it works
